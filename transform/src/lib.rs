@@ -13,45 +13,34 @@ const MAX_SAFE_INTEGER: i64 = 9007199254740991;
 pub struct TransformVisitor;
 
 impl TransformVisitor {
+    #[allow(dead_code)]
     pub fn new() -> Self {
-        TransformVisitor
+        Self
     }
 
     fn parse_numeric_literal(value: &str) -> Option<i64> {
-        if value.starts_with("0x") || value.starts_with("-0x") {
-            i64::from_str_radix(value.trim_start_matches("-0x").trim_start_matches("0x"), 16).ok()
-        } else if value.starts_with("0b") || value.starts_with("-0b") {
-            i64::from_str_radix(value.trim_start_matches("-0b").trim_start_matches("0b"), 2).ok()
-        } else if value.starts_with("0o") || value.starts_with("-0o") {
-            i64::from_str_radix(value.trim_start_matches("-0o").trim_start_matches("0o"), 8).ok()
-        } else {
-            value.parse().ok()
+        match value.get(..2) {
+            Some("0x") => i64::from_str_radix(&value[2..], 16),
+            Some("0b") => i64::from_str_radix(&value[2..], 2),
+            Some("0o") => i64::from_str_radix(&value[2..], 8),
+            _ => value.parse(),
         }
+        .ok()
     }
 
-    fn is_in_safe_integer_range(value: i64) -> bool {
-        value.abs() <= MAX_SAFE_INTEGER
-    }
-
-    fn create_bigint_call(&self, span: Span, value: String) -> Expr {
+    fn create_bigint_call(&self, span: Span, value: &str) -> Expr {
         let bigint_ident = Ident::new(Atom::from("BigInt"), span, SyntaxContext::empty());
-
-        let arg = Lit::Num(Number {
-            span,
-            value: if value.starts_with("0") {
-                0.0
-            } else {
-                value.parse().unwrap_or(0.0)
-            },
-            raw: Some(value.into()),
-        });
-
+        
         Expr::Call(CallExpr {
             span,
             callee: Callee::Expr(Box::new(Expr::Ident(bigint_ident))),
             args: vec![ExprOrSpread {
                 spread: None,
-                expr: Box::new(Expr::Lit(arg)),
+                expr: Box::new(Expr::Lit(Lit::Num(Number {
+                    span,
+                    value: value.parse().unwrap_or(0.0),
+                    raw: Some(value.into()),
+                }))),
             }],
             type_args: None,
             ctxt: SyntaxContext::empty(),
@@ -70,14 +59,15 @@ impl VisitMut for TransformVisitor {
         expr.visit_mut_children_with(self);
 
         if let Expr::Lit(Lit::BigInt(big_int)) = expr {
+            let owned_str = big_int.value.to_string();
             let value_str = big_int
                 .raw
-                .as_ref()
-                .map(|s| s.trim_end_matches('n').to_string())
-                .unwrap_or_else(|| big_int.value.to_string());
+                .as_deref()
+                .map(|s| s.trim_end_matches('n'))
+                .unwrap_or(&owned_str);
 
-            if let Some(value) = Self::parse_numeric_literal(&value_str) {
-                if Self::is_in_safe_integer_range(value) {
+            if let Some(value) = Self::parse_numeric_literal(value_str) {
+                if value.abs() <= MAX_SAFE_INTEGER {
                     *expr = self.create_bigint_call(big_int.span, value_str);
                 }
             }
