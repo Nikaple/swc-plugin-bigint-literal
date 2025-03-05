@@ -1,0 +1,16 @@
+[package]
+name = "swc-plugin-bigint-literal-transform"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+swc_core = { version = "16.4.0", features = ["ecma_ast", "ecma_visit", "common"] }
+serde = { version = "1.0.218", features = ["derive"] }
+tracing = "0.1.41"
+
+[dev-dependencies]
+swc_ecma_parser = "10.0.0"
+swc_ecma_transforms_testing = "11.0.1"
+testing = "8.0.0"
+swc_core = { version = "16.4.0", features = ["ecma_ast", "ecma_visit", "common", "__testing_transform"] } 

@@ -1387,10 +1387,23 @@ name = "swc-plugin-bigint-literal"
 version = "0.1.0"
 dependencies = [
  "serde",
+ "swc-plugin-bigint-literal-transform",
  "swc_core",
  "swc_ecma_parser",
  "swc_ecma_transforms_testing",
  "testing",
+]
+
+[[package]]
+name = "swc-plugin-bigint-literal-transform"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "swc_core",
+ "swc_ecma_parser",
+ "swc_ecma_transforms_testing",
+ "testing",
+ "tracing",
 ]
 
 [[package]]

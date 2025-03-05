@@ -6,18 +6,15 @@ edition = "2021"
 [lib]
 crate-type = ["cdylib"]
 
-[profile.release]
-lto = true
-
 [dependencies]
 swc_core = { version = "16.4.0", features = ["ecma_plugin_transform"] }
 serde = { version = "1.0.218", features = ["derive"] }
-
-# .cargo/config.toml defines few alias to build plugin.
-# cargo build-wasi generates wasm-wasi32 binary
-# cargo build-wasm32 generates wasm32-unknown-unknown binary.
+swc-plugin-bigint-literal-transform = { path = "./transform" }
 
 [dev-dependencies]
 swc_ecma_parser = "10.0.0"
 swc_ecma_transforms_testing = "11.0.1"
 testing = "8.0.0"
+
+[workspace]
+members = ["transform"]

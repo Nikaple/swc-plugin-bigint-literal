@@ -10,7 +10,7 @@ const expectedOutput = `
     var decimal = BigInt(123);
 `;
 
-const pluginPath = path.resolve(__dirname, '../../target/wasm32-wasip1/debug/swc_plugin_bigint_literal.wasm');
+const pluginPath = path.resolve(__dirname, '../../target/wasm32-wasip1/release/swc_plugin_bigint_literal.wasm');
 const swcOptions = {
     jsc: {
         parser: {

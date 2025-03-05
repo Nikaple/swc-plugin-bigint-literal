@@ -1,6 +1,6 @@
 # SWC Plugin BigInt Literal
 
-A SWC compiler plugin that optimizes BigInt literals in JavaScript code. When a BigInt literal is within the safe integer range, the plugin transforms it into a `BigInt()` function call.
+A SWC compiler plugin that transforms BigInt literals in JavaScript code. When a BigInt literal is within the safe integer range, the plugin transforms it into a `BigInt()` function call.
 
 ## Features
 
@@ -29,8 +29,8 @@ A SWC compiler plugin that optimizes BigInt literals in JavaScript code. When a 
 0o777n        -> BigInt(0o777)
 
 // Negative numbers
--42n          -> BigInt(-42)
--0xffn        -> BigInt(-0xff)
+-42n          -> -BigInt(42)
+-0xffn        -> -BigInt(0xff)
 
 // Expressions
 1n + 2n       -> BigInt(1) + BigInt(2)
