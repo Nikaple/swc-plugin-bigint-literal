@@ -48,10 +48,6 @@ A SWC compiler plugin that transforms BigInt literals in JavaScript code. When a
    // Numbers outside safe integer range remain unchanged
    9007199254740992n   // remains as is
    -9007199254740992n  // remains as is
-   
-   // Numbers in expressions that result in values outside the range will still be transformed
-   // (Note: This may lead to inconsistent calculation results)
-   9007199254740990n + 2n  -> BigInt(9007199254740990) + BigInt(2)
    ```
 
 ## Usage
@@ -67,22 +63,12 @@ A SWC compiler plugin that transforms BigInt literals in JavaScript code. When a
      "jsc": {
        "experimental": {
          "plugins": [
-           ["swc-plugin-bigint-literal.wasm", {}]
+           ["swc-plugin-bigint-literal", {}]
          ]
        }
      }
    }
    ```
-
-## Important Notes
-
-1. Performance Considerations
-   - For BigInt operations within the safe integer range, using `BigInt()` function may be more performant than literal notation
-   - For numbers outside the range, keeping the literal notation is more appropriate
-
-2. Compatibility
-   - Ensure your runtime environment supports BigInt
-   - Requires ES2020 or later
 
 ## Development Requirements
 
