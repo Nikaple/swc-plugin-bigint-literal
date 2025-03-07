@@ -1398,6 +1398,8 @@ dependencies = [
 name = "swc-plugin-bigint-literal-transform"
 version = "0.1.0"
 dependencies = [
+ "num-bigint",
+ "num-traits",
  "serde",
  "swc_core",
  "swc_ecma_parser",

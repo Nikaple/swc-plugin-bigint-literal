@@ -26,7 +26,7 @@ fn hex_test() {
         Some(false),
         |_| TransformVisitor,
         r#"const hex = 0xffn;"#,
-        r#"const hex = BigInt(0xff);"#,
+        r#"const hex = BigInt(255);"#,
     );
 }
 
@@ -37,7 +37,7 @@ fn binary_test() {
         Some(false),
         |_| TransformVisitor,
         r#"const binary = 0b1111n;"#,
-        r#"const binary = BigInt(0b1111);"#,
+        r#"const binary = BigInt(15);"#,
     );
 }
 
@@ -48,18 +48,7 @@ fn octal_test() {
         Some(false),
         |_| TransformVisitor,
         r#"const octal = 0o777n;"#,
-        r#"const octal = BigInt(0o777);"#,
-    );
-}
-
-#[test]
-fn large_number_test() {
-    test_transform(
-        syntax(),
-        Some(false),
-        |_| TransformVisitor,
-        r#"const large = 9007199254740992n;"#,
-        r#"const large = 9007199254740992n;"#,
+        r#"const octal = BigInt(511);"#,
     );
 }
 
@@ -92,7 +81,7 @@ fn negative_hex_test() {
         Some(false),
         |_| TransformVisitor,
         r#"const negativeHex = -0xffn;"#,
-        r#"const negativeHex = -BigInt(0xff);"#,
+        r#"const negativeHex = -BigInt(255);"#,
     );
 }
 
@@ -104,5 +93,38 @@ fn zero_test() {
         |_| TransformVisitor,
         r#"const zero = 0n + (-0n);"#,
         r#"const zero = BigInt(0) + -BigInt(0);"#,
+    );
+}
+
+#[test]
+fn huge_int_test() {
+    test_transform(
+        syntax(),
+        Some(false),
+        |_| TransformVisitor,
+        r#"const huge = 730750818665451215712927172538123444058715062272n;"#,
+        r#"const huge = BigInt(1) + BigInt(9007199254740991) * BigInt(9007199254740991) * BigInt(9007199254740991);"#,
+    );
+}
+
+#[test]
+fn not_safe_int_test() {
+    test_transform(
+        syntax(),
+        Some(false),
+        |_| TransformVisitor,
+        r#"const huge = 9007199254740992n;"#,
+        r#"const huge = BigInt(1) + BigInt(9007199254740991)"#,
+    );
+}
+
+#[test]
+fn another_huge_int_test() {
+    test_transform(
+        syntax(),
+        Some(false),
+        |_| TransformVisitor,
+        r#"const huge = 13164036458569646875738116129555399058346566568785520866804115739n;"#,
+        r#"const huge = BigInt(4357431240991) + BigInt(6) * (BigInt(9007199254740991) * BigInt(9007199254740991) * BigInt(9007199254740991)) + BigInt(2) * (BigInt(9007199254740991) * BigInt(9007199254740991) * BigInt(9007199254740991) * BigInt(9007199254740991));"#,
     );
 }
